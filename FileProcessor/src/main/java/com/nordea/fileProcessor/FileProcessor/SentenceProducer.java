@@ -115,7 +115,7 @@ public class SentenceProducer implements Runnable {
 
 				line=readerSentenceQueue.poll(5, TimeUnit.SECONDS);
 				logger.debug("sentence at producter"+line);
-				System.out.println("sentence at produce sentence"+line);
+			
 				if(line!=null) {
 
 					sentenceIdentifier(line)
