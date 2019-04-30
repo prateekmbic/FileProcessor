@@ -12,6 +12,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
+
+/*
+ * This is the Sentence Object. It Contains the list of words in sorted order.
+ * It provides its XML and CSV Format using toCSV and toXML methods.
+ * */
 @Component
 @Scope("prototype")
 public class Sentence implements Comparator<String>{
