@@ -21,7 +21,7 @@ class FileReaderTest {
     @Test
     void asserFileNotFoundException() {
 
-    	Throwable exception =    assertThrows(FileProcessorException.class, ()->fileReader.bufferedReaderRead("test.cmk"));
+    	Throwable exception =    assertThrows(FileProcessorException.class, ()->fileReader.readFile("test.cmk"));
     	 assertEquals(exception.getMessage(), "test.cmk (The system cannot find the file specified)");
     }
 

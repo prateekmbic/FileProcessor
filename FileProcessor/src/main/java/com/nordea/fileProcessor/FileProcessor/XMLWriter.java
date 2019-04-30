@@ -7,6 +7,13 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
+/*
+ * This is consumer thread to SentenceProducer.
+ * Sentence Producer produces the Sentence Object and puts it into Process Queue.
+ * This thread dequeus the message from the Process Queue and writes it in the .xml File
+ * 
+ * 
+ * */
 @Component
 @Scope("prototype")
 public class XMLWriter implements Runnable, SentenceWriter {

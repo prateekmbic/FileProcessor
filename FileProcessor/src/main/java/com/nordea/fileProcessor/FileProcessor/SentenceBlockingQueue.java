@@ -10,6 +10,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
+/*
+ * This is wrapper to LinkedBlockingQueue<Sentence>.
+ * Sentence Producer Populates this Queue with the Sentence Objects and
+ * CSV and XML Writer Use this queue to recevie the Sentence Object
+ * */
 @Component
 public class SentenceBlockingQueue implements ProcessQueue {
 	

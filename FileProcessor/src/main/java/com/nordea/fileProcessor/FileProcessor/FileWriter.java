@@ -3,6 +3,9 @@ package com.nordea.fileProcessor.FileProcessor;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+/*
+ * Classes implementing this interface writes the contents to the file
+ * */
 public interface FileWriter {
 
 	public static final String UNABLE_TO_FIND_THE_OUTPUT_FILE_NAME = "Unable to Find the Output File Name";

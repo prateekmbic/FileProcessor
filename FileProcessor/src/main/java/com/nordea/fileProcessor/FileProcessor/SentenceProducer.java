@@ -14,6 +14,10 @@ import org.springframework.beans.factory.ObjectFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+/*
+ * This class contains all the logic for converting the lines in the file to 
+ * Sentence Objects. It uses Regex to identify the Sentences.
+ * */
 @Service
 public class SentenceProducer implements Runnable {
 
@@ -70,7 +74,10 @@ public class SentenceProducer implements Runnable {
 
 	}
 
-
+	/**
+	 * This is the lambda function to create the Sentence object and 
+	 * populate it with the sorted word list
+	 */
 	public ThrowingConsumer<String,Exception> sentenceProcessorLambda(){
 
 		return	sentenceInList->
@@ -96,19 +103,22 @@ public class SentenceProducer implements Runnable {
 		};
 	};
 
-
+	/*
+	 * This method dequeu the line from readerSentence Blocking Queue and 
+	 * runs the regex on it to identify the sentences in it.
+	 * */
 	public void produceSentences() throws FileProcessorException{
 
-		String sentence =null;
+		String line =null;
 		do {		
 			try {
 
-				sentence=readerSentenceQueue.poll(5, TimeUnit.SECONDS);
-				logger.debug("sentence at producter"+sentence);
-				System.out.println("sentence at produce sentence"+sentence);
-				if(sentence!=null) {
+				line=readerSentenceQueue.poll(5, TimeUnit.SECONDS);
+				logger.debug("sentence at producter"+line);
+				System.out.println("sentence at produce sentence"+line);
+				if(line!=null) {
 
-					sentenceIdentifier(sentence)
+					sentenceIdentifier(line)
 					.forEach(ThrowingConsumer.consumerExceptionThrower(sentenceProcessorLambda()));
 				}	
 			}catch(Exception e){
@@ -117,57 +127,60 @@ public class SentenceProducer implements Runnable {
 				FileProcessorException.raiseException(e);
 			}
 
-		}while( sentence!=null);
+		}while( line!=null);
 	}
-	public List<String> sentenceIdentifier(String sentence) {
+	public List<String> sentenceIdentifier(String line) {
 		List<String> sentenceList = new ArrayList<String>();
 
-		incompleteSentenceBuilder.append(runRegexPattern(sentence, FIRST_SENTENCE ));
+		incompleteSentenceBuilder.append(runRegexPattern(line, FIRST_SENTENCE ));
 
-		Matcher matcher = splitString.matcher(sentence);
+		Matcher matcher = splitString.matcher(line);
 		if(matcher.find())
 		{
 			sentenceList.add(incompleteSentenceBuilder.toString());
 			incompleteSentenceBuilder= new StringBuilder();
-			incompleteSentenceBuilder.append(runRegexPattern(sentence, LAST_SENTENCE));
-			sentenceList.addAll(runRegexPattern(sentence, MIDDLE_SENTENCE));
-			logger.debug("input Sentence ->"+sentence +" output Sentence List ->"+sentenceList);
+			incompleteSentenceBuilder.append(runRegexPattern(line, LAST_SENTENCE));
+			sentenceList.addAll(runRegexPattern(line, MIDDLE_SENTENCE));
+			logger.debug("input Line ->"+line +" output Sentence List ->"+sentenceList);
 
 		}else {
-			incompleteSentenceBuilder.append(sentence);
+			incompleteSentenceBuilder.append(line);
 		}
 
 		return sentenceList;
 	}
-
-	public List<String> runRegexPattern(String sentence, String patternName) {
+	/*
+	 * This method identifiers the first, middle and last sentences of the line.
+	 * 
+	 * */
+	public List<String> runRegexPattern(String line, String patternName) {
 
 		Matcher matcher ;
 		List<String> sentenceList = new ArrayList<String>();
 		switch(patternName) {
 		case FIRST_SENTENCE: 
 
-			matcher = patternFirstSentence.matcher(sentence);
+			matcher = patternFirstSentence.matcher(line);
 			while(matcher.find())
 			{
-				logger.debug(FIRST_SENTENCE+"sentence->"+sentence+"pattern->"+firstSentenceRegex+ "  output->"+matcher.group());
+				logger.debug(FIRST_SENTENCE+"sentence->"+line+"pattern->"+firstSentenceRegex+ "  output->"+matcher.group());
 				sentenceList.add(   matcher.group());
 			}
 			break;
 		case MIDDLE_SENTENCE:     
 
-			matcher = patternMiddleSentence.matcher(sentence);
+			matcher = patternMiddleSentence.matcher(line);
 			while(matcher.find())
 			{
 
 				sentenceList.add(   matcher.group());
-				logger.debug(MIDDLE_SENTENCE+"sentence->"+sentence+"pattern->"+middleSentenceRegex+ "  output->"+matcher.group());
+				logger.debug(MIDDLE_SENTENCE+"sentence->"+line+"pattern->"+middleSentenceRegex+ "  output->"+matcher.group());
 
 			}
 
 			break;
 		case LAST_SENTENCE: 
-			matcher = patternMiddleSentence.matcher(sentence);
+			matcher = patternMiddleSentence.matcher(line);
 			int lastindex=0;
 			while(matcher.find())
 			{
@@ -175,19 +188,19 @@ public class SentenceProducer implements Runnable {
 				lastindex = matcher.end();
 			}
 			if(lastindex>0) {
-				sentenceList.add(  sentence.substring(lastindex));
-				logger.debug(LAST_SENTENCE+"sentence->"+sentence+"pattern->"+middleSentenceRegex+ "  output->"+sentence.substring(lastindex));
+				sentenceList.add(  line.substring(lastindex));
+				logger.debug(LAST_SENTENCE+"sentence->"+line+"pattern->"+middleSentenceRegex+ "  output->"+line.substring(lastindex));
 
 			}else {
-				matcher = patternFirstSentence.matcher(sentence);
+				matcher = patternFirstSentence.matcher(line);
 				while(matcher.find())
 				{
 					matcher.group();
 					lastindex = matcher.end();
 				}
 				if(lastindex>0) {
-					sentenceList.add(  sentence.substring(lastindex));
-					logger.debug(LAST_SENTENCE+"sentence->"+sentence+"pattern->"+firstSentenceRegex+ "  output->"+sentence.substring(lastindex));
+					sentenceList.add(  line.substring(lastindex));
+					logger.debug(LAST_SENTENCE+"sentence->"+line+"pattern->"+firstSentenceRegex+ "  output->"+line.substring(lastindex));
 				}
 			}
 

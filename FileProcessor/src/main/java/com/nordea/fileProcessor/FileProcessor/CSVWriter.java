@@ -9,6 +9,13 @@ import org.springframework.stereotype.Component;
 
 @Component
 @Scope("prototype")
+/*
+ * This is consumer thread to SentenceProducer.
+ * Sentence Producer produces the Sentence Object and puts it into Process Queue.
+ * This thread dequeus the message from the Process Queue and writes it in the .csvFile
+ * 
+ * 
+ * */
 public class CSVWriter implements Runnable,SentenceWriter {
 	
 	private static final String CSV_PROCESS = "CSVProcess";
@@ -61,6 +68,10 @@ public class CSVWriter implements Runnable,SentenceWriter {
 		
 	}
 
+	/*This method writes the content using FileWriter into CSV File
+	 * 
+	 * 
+	 * */
 	public void writeContent() throws FileProcessorException {
 		boolean writeFlag=true;
 		int headerLength=0;
@@ -108,7 +119,9 @@ public class CSVWriter implements Runnable,SentenceWriter {
 
 	}
 	
-	
+	/*
+	 * This method returns the header text for the csv file.
+	 * */
 	public String getCSVFileHeader(int headerLength){
 		
 		
