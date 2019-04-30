@@ -1,4 +1,4 @@
-# fileProcessor
+# FileProcessor
 File processor for processing Text file into xml and csv
 
 User can build the jar using gradle bootjar.
